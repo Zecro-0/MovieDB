@@ -21,28 +21,29 @@ import com.example.moviedb.model.Movie
 
 
 @Composable
-fun MovieListScreen(uiState: ListUiState, modifier: Modifier = Modifier) {
+fun MovieListScreen(uiState: ListUiState, onClick: (movie: Movie) -> Unit, modifier: Modifier = Modifier) {
     when (uiState) {
         is ListUiState.Loading -> Text("loading...")
-        is ListUiState.Success -> MovieList(movies = uiState.movies, modifier = modifier)
+        is ListUiState.Success -> MovieList(movies = uiState.movies, onClick = onClick, modifier = modifier)
         is ListUiState.Error -> Text("error")
 
     }
 }
 
 @Composable
-fun MovieList(movies: List<Movie>, modifier: Modifier = Modifier) {
+fun MovieList(movies: List<Movie>, onClick: (movie: Movie) -> Unit,modifier: Modifier = Modifier) {
     LazyColumn(modifier = modifier.background(MaterialTheme.colorScheme.background)) {
         items(movies) { movie ->
-            MovieCard(movie = movie)
+            MovieCard(movie = movie, onClick = onClick)
         }
     }
 }
 
 
 @Composable
-fun MovieCard(movie: Movie, modifier: Modifier = Modifier) {
+fun MovieCard(movie: Movie, onClick: (movie: Movie) -> Unit, modifier: Modifier = Modifier) {
     Card(
+        onClick = { onClick(movie) },
         modifier = modifier
             .padding(8.dp)
             .fillMaxWidth()
@@ -81,6 +82,7 @@ fun MovieGenreChip(genre: Genre, modifier: Modifier = Modifier){
 @Composable
 fun MovieCardPreview() {
     MovieCard(
+        onClick =  {},
         movie = Movie(
             adult = false,
             backdropPath = "/qFfWFwfaEHzDLWLuttWiYq7Poy2.jpg",

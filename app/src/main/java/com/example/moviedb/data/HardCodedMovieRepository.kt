@@ -2,6 +2,10 @@ package com.example.moviedb.data
 
 import com.example.moviedb.model.Genre
 import com.example.moviedb.model.Movie
+import com.example.moviedb.model.MovieDetails
+import com.example.moviedb.model.ProductionCompany
+import com.example.moviedb.model.ProductionCountry
+import com.example.moviedb.model.SpokenLanguage
 
 class HardCodedMovieRepository: IMovieRepository {
     override suspend fun getMovies(): List<Movie> {
@@ -178,4 +182,50 @@ class HardCodedMovieRepository: IMovieRepository {
             ),
         )
     }
+
+    override suspend fun getMovie(id: Int): MovieDetails {
+        return MovieDetails(
+            adult = false,
+            backdropPath = "/TXSxV23MWYkezZ3219gtgcSX6n.jpg",
+            budget = 4000000,
+            genres = listOf(
+                Genre(id = 12, name = "Adventure"),
+                Genre(id = 16, name = "Animation"),
+                Genre(id = 14, name = "Fantasy")
+            ),
+            homepage = "",
+            id = 123,
+            imdbId = "tt0077869",
+            originCountry = listOf("US", "GB"),
+            originalLanguage = "en",
+            originalTitle = "The Lord of the Rings",
+            overview = "The Fellowship of the Ring embark on a journey to destroy the One Ring and end Sauron's reign over Middle-earth.",
+            popularity = 4.9445,
+            posterPath = "/liW0mjvTyLs7UCumaHhx3PpU4VT.jpg",
+            productionCompanies = listOf(
+                ProductionCompany(id = 286, logoPath = null, name = "Fantasy Films", originCountry = ""),
+                ProductionCompany(id = 4921, logoPath = null, name = "Bakshi Productions", originCountry = ""),
+                ProductionCompany(id = 141322, logoPath = null, name = "Saul Zaentz Film Productions", originCountry = ""),
+                ProductionCompany(id = 60, logoPath = "/4YldLvCWQL9VIAHQ2Fu3Ffkh9Si.png", name = "United Artists", originCountry = "US")
+            ),
+            productionCountries = listOf(
+                ProductionCountry(iso31661 = "GB", name = "United Kingdom"),
+                ProductionCountry(iso31661 = "US", name = "United States of America")
+            ),
+            releaseDate = "1978-11-15",
+            revenue = 30500000,
+            runtime = 132,
+            spokenLanguages = listOf(
+                SpokenLanguage(englishName = "English", iso6391 = "en", name = "English")
+            ),
+            status = "Released",
+            tagline = "Fantasy...beyond your imagination",
+            title = "The Lord of the Rings",
+            video = false,
+            voteAverage = 6.6,
+            voteCount = 961
+        )
+    }
+
+
 }

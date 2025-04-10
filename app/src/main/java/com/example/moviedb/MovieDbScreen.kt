@@ -1,7 +1,6 @@
 package com.example.moviedb
 
-import androidx.annotation.StringRes
-import androidx.compose.animation.AnimatedContentScope
+
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
@@ -16,6 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,12 +25,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import coil.size.Scale
 import com.example.moviedb.ui.screens.home.HomeScreen
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.moviedb.data.HardCodedMovieRepository
 import com.example.moviedb.ui.screens.list.MovieListScreen
 import com.example.moviedb.ui.screens.list.MovieListScreenViewModel
+import com.example.moviedb.ui.screens.details.DetailsScreen
 
 
 enum class MovieDbScreen(val title: String?) {
@@ -69,8 +71,9 @@ fun MovieDBAppBar(
 
 @Composable
 fun MovieDbApp(
+    modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    modifier: Modifier = Modifier
+    viewModel: MovieDbAppViewModel = viewModel(factory = MovieDbAppViewModel.Factory)
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = MovieDbScreen.valueOf(
@@ -147,9 +150,21 @@ fun MovieDbApp(
                     }
                 }
             ) {
-                val viewModel: MovieListScreenViewModel =
+                val listViewModel: MovieListScreenViewModel =
                     viewModel(factory = MovieListScreenViewModel.Factory)
-                MovieListScreen(viewModel.uiState, modifier)
+                MovieListScreen(listViewModel.uiState, onClick = { movie ->
+                    viewModel.setSelectedMovie(movie)
+                    navController.navigate(MovieDbScreen.Detail.name)
+                }, modifier = modifier)
+            }
+
+            composable(
+                route = MovieDbScreen.Detail.name,
+            ){
+                val movie = viewModel.getSelectedMovieDetails()
+                if(movie != null){
+                    DetailsScreen(movie = movie, modifier=modifier)
+                }
             }
         }
     }
