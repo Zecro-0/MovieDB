@@ -11,13 +11,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.moviedb.MovieDBApplication
-import com.example.moviedb.data.HardCodedMovieRepository
 import com.example.moviedb.data.IMovieRepository
+import com.example.moviedb.model.Genre
 import com.example.moviedb.model.Movie
+import com.example.moviedb.model.MovieApiResponse
 import kotlinx.coroutines.launch
 
 sealed interface ListUiState {
-    data class Success(val movies: List<Movie>) : ListUiState
+    data class Success(val movies: List<Movie>, val genres: List<Genre>) : ListUiState
     object Error : ListUiState
     object Loading : ListUiState
 }
@@ -33,18 +34,22 @@ class MovieListScreenViewModel(private val movieRepository: IMovieRepository) : 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-//                val application = (this[APPLICATION_KEY] as MovieDBApplication)
-                MovieListScreenViewModel(movieRepository = HardCodedMovieRepository())
+                val application = (this[APPLICATION_KEY] as MovieDBApplication)
+                MovieListScreenViewModel(movieRepository = application.container.movieRepository)
             }
         }
     }
+
+
 
     fun getMovies(){
         viewModelScope.launch {
             uiState = ListUiState.Loading
             uiState = try {
+                val moveGenres = movieRepository.getMovieGenres()
+                val tvGenres = movieRepository.getTvGenres()
                 val result = movieRepository.getMovies()
-                ListUiState.Success(result)
+                ListUiState.Success(result.results, moveGenres.genres + tvGenres.genres)
             } catch (e: Exception) {
                 Log.e("MovieListScreenViewModel", e.toString())
                 ListUiState.Error
