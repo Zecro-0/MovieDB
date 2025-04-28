@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -15,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.moviedb.data.HardCodedMovieRepository
 import com.example.moviedb.model.Genre
 import com.example.moviedb.model.Movie
 
@@ -24,24 +26,35 @@ import com.example.moviedb.model.Movie
 fun MovieListScreen(uiState: ListUiState, onClick: (movie: Movie) -> Unit, modifier: Modifier = Modifier) {
     when (uiState) {
         is ListUiState.Loading -> Text("loading...")
-        is ListUiState.Success -> MovieList(movies = uiState.movies, onClick = onClick, modifier = modifier)
+        is ListUiState.Success -> MovieGrid(movies = uiState.movies, genres = uiState.genres, onClick = onClick, modifier = modifier)
         is ListUiState.Error -> Text("error")
 
     }
 }
 
 @Composable
-fun MovieList(movies: List<Movie>, onClick: (movie: Movie) -> Unit,modifier: Modifier = Modifier) {
+fun MovieGrid(movies: List<Movie>, genres: List<Genre>, onClick: (movie: Movie) -> Unit, modifier: Modifier = Modifier){
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2)
+    ){
+        items(movies){ movie ->
+            MovieCard(movie = movie, genrers = genres, onClick = onClick)
+        }
+    }
+}
+
+@Composable
+fun MovieList(movies: List<Movie>, genres: List<Genre>, onClick: (movie: Movie) -> Unit,modifier: Modifier = Modifier) {
     LazyColumn(modifier = modifier.background(MaterialTheme.colorScheme.background)) {
         items(movies) { movie ->
-            MovieCard(movie = movie, onClick = onClick)
+            MovieCard(movie = movie, genrers = genres, onClick = onClick)
         }
     }
 }
 
 
 @Composable
-fun MovieCard(movie: Movie, onClick: (movie: Movie) -> Unit, modifier: Modifier = Modifier) {
+fun MovieCard(movie: Movie,genrers: List<Genre>, onClick: (movie: Movie) -> Unit, modifier: Modifier = Modifier) {
     Card(
         onClick = { onClick(movie) },
         modifier = modifier
@@ -49,7 +62,7 @@ fun MovieCard(movie: Movie, onClick: (movie: Movie) -> Unit, modifier: Modifier 
             .fillMaxWidth()
     ) {
         Text(
-            text = movie.name,
+            text = movie.title,
             modifier = modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
             style = MaterialTheme.typography.titleLarge
         )
@@ -60,8 +73,8 @@ fun MovieCard(movie: Movie, onClick: (movie: Movie) -> Unit, modifier: Modifier 
                 text = "Genres:"
             )
             LazyRow {
-                items(movie.genres){
-                    MovieGenreChip(it)
+                items(movie.genreIds){
+                    MovieGenreChip(genre = genrers.first { genre -> genre.id == it })
                 }
             }
         }
@@ -78,33 +91,3 @@ fun MovieGenreChip(genre: Genre, modifier: Modifier = Modifier){
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun MovieCardPreview() {
-    MovieCard(
-        onClick =  {},
-        movie = Movie(
-            adult = false,
-            backdropPath = "/qFfWFwfaEHzDLWLuttWiYq7Poy2.jpg",
-            genreIds = listOf(10767),
-            id = 2261,
-            originCountry = listOf("US"),
-            originalLanguage = "en",
-            originalName = "The Tonight Show Starring Johnny Carson",
-            overview = "The Tonight Show Starring Johnny Carson is a talk show hosted by Johnny Carson under The Tonight Show franchise from 1962 to 1992. It originally aired during late-night. For its first ten years, Carson's Tonight Show was based in New York City with occasional trips to Burbank, California; in May 1972, the show moved permanently to Burbank, California. In 2002, The Tonight Show Starring Johnny Carson was ranked #12 on TV Guide's 50 Greatest TV Shows of All Time.",
-            popularity = 667.7367,
-            posterPath = "/oA8QVTGlAN511uCAMDN60aVQUs1.jpg",
-            firstAirDate = "1962-10-01",
-            name = "The Tonight Show Starring Johnny Carson",
-            voteAverage = 7.41,
-            voteCount = 72,
-            genres = listOf(
-                Genre(
-                    id = 10767,
-                    name = "Talk"
-                )
-            )
-
-        )
-    )
-}

@@ -28,10 +28,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.moviedb.ui.screens.home.HomeScreen
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.moviedb.data.HardCodedMovieRepository
 import com.example.moviedb.ui.screens.list.MovieListScreen
 import com.example.moviedb.ui.screens.list.MovieListScreenViewModel
 import com.example.moviedb.ui.screens.details.DetailsScreen
+import com.example.moviedb.ui.screens.details.MovieDetailsViewModel
 
 
 enum class MovieDbScreen(val title: String?) {
@@ -105,50 +105,6 @@ fun MovieDbApp(
 
             composable(
                 route = MovieDbScreen.List.name,
-                enterTransition = {
-                    when (initialState.destination.route) {
-                        MovieDbScreen.Home.name ->
-                            slideIntoContainer(
-                                AnimatedContentTransitionScope.SlideDirection.Left,
-                                animationSpec = tween(500)
-                            )
-
-                        else -> null
-                    }
-                },
-                exitTransition = {
-                    when (targetState.destination.route) {
-                        MovieDbScreen.Home.name ->
-                            slideOutOfContainer(
-                                AnimatedContentTransitionScope.SlideDirection.Left,
-                                animationSpec = tween(500)
-                            )
-
-                        else -> null
-                    }
-                },
-                popEnterTransition = {
-                    when (initialState.destination.route) {
-                        MovieDbScreen.Home.name ->
-                            slideIntoContainer(
-                                AnimatedContentTransitionScope.SlideDirection.Right,
-                                animationSpec = tween(500)
-                            )
-
-                        else -> null
-                    }
-                },
-                popExitTransition = {
-                    when (targetState.destination.route) {
-                        MovieDbScreen.Home.name ->
-                            slideOutOfContainer(
-                                AnimatedContentTransitionScope.SlideDirection.Right,
-                                animationSpec = tween(500)
-                            )
-
-                        else -> null
-                    }
-                }
             ) {
                 val listViewModel: MovieListScreenViewModel =
                     viewModel(factory = MovieListScreenViewModel.Factory)
@@ -161,10 +117,9 @@ fun MovieDbApp(
             composable(
                 route = MovieDbScreen.Detail.name,
             ){
-                val movie = viewModel.getSelectedMovieDetails()
-                if(movie != null){
-                    DetailsScreen(movie = movie, modifier=modifier)
-                }
+                val detailsViewModel: MovieDetailsViewModel =
+                    viewModel(factory = MovieDetailsViewModel.Factory(viewModel.selectedMovie.collectAsStateWithLifecycle().value!!.id) )
+                DetailsScreen(viewModel= detailsViewModel, modifier=modifier)
             }
         }
     }
