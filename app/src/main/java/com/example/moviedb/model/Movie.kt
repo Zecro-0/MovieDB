@@ -1,5 +1,7 @@
 package com.example.moviedb.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -16,6 +18,7 @@ data class MovieApiResponse(
     val totalResults: Int
 )
 
+@Entity
 @Serializable
 data class Movie(
     val adult: Boolean,
@@ -23,6 +26,7 @@ data class Movie(
     val backdropPath: String?,
     @SerialName("genre_ids")
     val genreIds: List<Int>,
+    @PrimaryKey
     val id: Int,
     @SerialName("original_language")
     val originalLanguage: String,

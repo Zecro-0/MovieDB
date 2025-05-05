@@ -1,11 +1,18 @@
 package com.example.moviedb.model
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.Relation
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Entity
 data class VideoResponse(
+    @PrimaryKey
     val id: Int,
+    @SerialName("results")
     val results: List<Video>
 )
 
@@ -22,3 +29,4 @@ data class Video(
     @SerialName("published_at") val publishedAt: String,
     val id: String
 )
+

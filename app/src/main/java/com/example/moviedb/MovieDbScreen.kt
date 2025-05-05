@@ -1,6 +1,9 @@
 package com.example.moviedb
 
 
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
@@ -27,11 +30,19 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.moviedb.ui.screens.home.HomeScreen
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.moviedb.ui.screens.list.MovieListScreen
 import com.example.moviedb.ui.screens.list.MovieListScreenViewModel
 import com.example.moviedb.ui.screens.details.DetailsScreen
 import com.example.moviedb.ui.screens.details.MovieDetailsViewModel
+import com.example.moviedb.work.DeleteCacheWorker
+import java.util.concurrent.TimeUnit
 
 
 enum class MovieDbScreen(val title: String?) {
@@ -79,6 +90,16 @@ fun MovieDbApp(
     val currentScreen = MovieDbScreen.valueOf(
         backStackEntry?.destination?.route ?: MovieDbScreen.Home.name
     )
+
+    val constraints = Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.CONNECTED)
+        .build()
+
+    val deleteCacheWorkReq = PeriodicWorkRequestBuilder<DeleteCacheWorker>(12, TimeUnit.HOURS)
+        .setConstraints(constraints)
+        .build()
+
+    WorkManager.getInstance(LocalContext.current).enqueue(deleteCacheWorkReq)
 
     Scaffold(
         topBar = {
