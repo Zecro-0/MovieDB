@@ -11,10 +11,7 @@ import com.example.moviedb.model.VideoResponse
 interface IMovieRepository {
     suspend fun getMovies(): MovieApiResponse
     suspend fun getMovie(id: Int): MovieDetailResponse
-    suspend fun getMovieGenres(): GenresResponse
-    suspend fun getTvGenres(): GenresResponse
+    suspend fun getMovieAndTvGenres(): GenresResponse
     suspend fun getReviews(id: Int): ReviewResponse
     suspend fun getVideos(id: Int): VideoResponse
-
-
 }

@@ -1,5 +1,8 @@
 package com.example.moviedb.model
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -12,12 +15,16 @@ data class ReviewResponse(
     @SerialName("total_results") val totalResults: Int
 )
 
+@Entity
 @Serializable
 data class Review(
     val author: String,
-    @SerialName("author_details") val authorDetails: AuthorDetails,
+    @Embedded
+    @SerialName("author_details")
+    val authorDetails: AuthorDetails,
     val content: String,
     @SerialName("created_at") val createdAt: String,
+    @PrimaryKey
     val id: String,
     @SerialName("updated_at") val updatedAt: String,
     val url: String

@@ -1,15 +1,20 @@
 package com.example.moviedb.model
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Entity
 data class MovieDetailResponse(
     val adult: Boolean,
 
     @SerialName("backdrop_path")
     val backdropPath: String? = null,
 
+    @Embedded
     @SerialName("belongs_to_collection")
     val belongsToCollection: CollectionInfo? = null,
 
@@ -19,6 +24,7 @@ data class MovieDetailResponse(
 
     val homepage: String,
 
+    @PrimaryKey
     val id: Int,
 
     @SerialName("imdb_id")
@@ -39,10 +45,8 @@ data class MovieDetailResponse(
 
     @SerialName("poster_path")
     val posterPath: String? = null,
-
     @SerialName("production_companies")
     val productionCompanies: List<ProductionCompany>,
-
     @SerialName("production_countries")
     val productionCountries: List<ProductionCountry>,
 
@@ -73,36 +77,39 @@ data class MovieDetailResponse(
 
 @Serializable
 data class CollectionInfo(
-    val id: Int,
-    val name: String,
+    @SerialName("id")
+    val collectionId: Int,
+    @SerialName("name")
+    val collectionName: String,
 
     @SerialName("poster_path")
-    val posterPath: String? = null,
+    val collectionPosterPath: String? = null,
 
     @SerialName("backdrop_path")
-    val backdropPath: String? = null
+    val collectionBackdropPath: String? = null
 )
 
 
 @Serializable
 data class ProductionCompany(
-    val id: Int,
-
     @SerialName("logo_path")
     val logoPath: String? = null,
+    @SerialName("id")
+    val productionCompanyId: Int,
 
-    val name: String,
+    @SerialName("name")
+    val productionCompanyName: String,
 
     @SerialName("origin_country")
-    val originCountry: String
+    val originCountry: String,
 )
 
 @Serializable
 data class ProductionCountry(
     @SerialName("iso_3166_1")
     val iso3166_1: String,
-
-    val name: String
+    @SerialName("name")
+    val productionCountryName: String,
 )
 
 @Serializable
@@ -110,8 +117,10 @@ data class SpokenLanguage(
     @SerialName("english_name")
     val englishName: String,
 
+
     @SerialName("iso_639_1")
     val iso639_1: String,
 
-    val name: String
+    @SerialName("name")
+    val spokenLanguageName: String,
 )

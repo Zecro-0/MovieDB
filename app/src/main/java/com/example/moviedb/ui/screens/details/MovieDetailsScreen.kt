@@ -41,6 +41,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
@@ -50,6 +52,7 @@ import com.example.moviedb.model.Movie
 import com.example.moviedb.model.MovieDetailResponse
 import com.example.moviedb.model.Review
 import com.example.moviedb.model.Video
+import com.example.moviedb.network.NetworkCallback
 import com.example.moviedb.ui.screens.list.MovieGenreChip
 
 @Composable
@@ -57,10 +60,14 @@ fun DetailsScreen(
     viewModel: MovieDetailsViewModel,
     modifier: Modifier = Modifier
 ) {
+    var isOnline = NetworkCallback.isOnlineState.collectAsStateWithLifecycle()
+    LaunchedEffect(isOnline.value) {
+        viewModel.getMovie()
+    }
     val scrollState = rememberScrollState()
     when(viewModel.uiState){
         is MovieDetailsUiState.Loading -> Text("loading...")
-        MovieDetailsUiState.Error -> TODO()
+        MovieDetailsUiState.Error -> Text("error")
         is MovieDetailsUiState.Success -> MovieDetails(
             movie = (viewModel.uiState as MovieDetailsUiState.Success).movie,
             genres = (viewModel.uiState as MovieDetailsUiState.Success).genres,
@@ -68,6 +75,7 @@ fun DetailsScreen(
             videos = (viewModel.uiState as MovieDetailsUiState.Success).videos,
             modifier = modifier,
             scrollState = scrollState)
+        is MovieDetailsUiState.Disconnected -> Text("Disconnected")
     }
 }
 
@@ -81,6 +89,8 @@ fun MovieDetails(
     scrollState: ScrollState = rememberScrollState()
 ){
     val uriHandler = LocalUriHandler.current
+
+
 
     Column(
         modifier = modifier

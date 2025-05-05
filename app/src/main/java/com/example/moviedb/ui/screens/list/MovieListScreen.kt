@@ -28,7 +28,7 @@ fun MovieListScreen(uiState: ListUiState, onClick: (movie: Movie) -> Unit, modif
         is ListUiState.Loading -> Text("loading...")
         is ListUiState.Success -> MovieGrid(movies = uiState.movies, genres = uiState.genres, onClick = onClick, modifier = modifier)
         is ListUiState.Error -> Text("error")
-
+        is ListUiState.Disconnected -> Text("Disconnected")
     }
 }
 
